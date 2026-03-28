@@ -9,6 +9,7 @@ import 'total_angka.dart';
 import 'stopwatch_page.dart';
 import 'hitung_piramid.dart';
 import 'kalender_jawa_page.dart';
+import 'weton_lahir_page.dart';
 import '../utils/jawa_calendar_utils.dart';
 
 class MainMenu extends StatefulWidget {
@@ -21,7 +22,6 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   DateTime _now = DateTime.now();
   late final Timer _clockTimer;
-  DateTime? _birthDate;
 
   @override
   void initState() {
@@ -41,87 +41,6 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   String _twoDigits(int value) => value.toString().padLeft(2, '0');
-
-  Future<void> _pickBirthDate() async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _birthDate ?? DateTime(2000, 1, 1),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-
-    if (pickedDate == null || !mounted) return;
-
-    final initialTime =
-        _birthDate != null
-            ? TimeOfDay(hour: _birthDate!.hour, minute: _birthDate!.minute)
-            : const TimeOfDay(hour: 0, minute: 0);
-
-    final pickedTime = await showTimePicker(
-      context: context,
-      initialTime: initialTime,
-      helpText: 'Pilih Jam & Menit Lahir',
-    );
-
-    if (pickedTime == null || !mounted) return;
-
-    final initialSecond = _birthDate?.second ?? 0;
-    final pickedSecond = await showDialog<int>(
-      context: context,
-      builder: (dialogContext) {
-        int selectedSecond = initialSecond;
-        return AlertDialog(
-          title: const Text('Pilih Detik Lahir'),
-          content: StatefulBuilder(
-            builder: (context, setDialogState) {
-              return DropdownButton<int>(
-                value: selectedSecond,
-                isExpanded: true,
-                items: List.generate(60, (i) {
-                  return DropdownMenuItem<int>(
-                    value: i,
-                    child: Text(_twoDigits(i)),
-                  );
-                }),
-                onChanged: (value) {
-                  if (value == null) return;
-                  setDialogState(() {
-                    selectedSecond = value;
-                  });
-                },
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Batal'),
-            ),
-            FilledButton(
-              onPressed:
-                  () => Navigator.of(dialogContext).pop(selectedSecond),
-              child: const Text('Pilih'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (pickedSecond == null) return;
-
-    final result = DateTime(
-      pickedDate.year,
-      pickedDate.month,
-      pickedDate.day,
-      pickedTime.hour,
-      pickedTime.minute,
-      pickedSecond,
-    );
-
-    setState(() {
-      _birthDate = result;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,6 +87,12 @@ class _MainMenuState extends State<MainMenu> {
         'c': Colors.brown,
         'p': const KalenderJawaPage(),
       },
+      {
+        't': 'Weton Lahir',
+        'i': Icons.cake,
+        'c': Colors.indigo,
+        'p': const WetonLahirPage(),
+      },
     ];
 
     return Scaffold(
@@ -205,30 +130,6 @@ class _MainMenuState extends State<MainMenu> {
                   Text(JawaCalendarUtils.formatMasehi(_now)),
                   Text('Jawa: ${JawaCalendarUtils.formatJawa(_now)}'),
                   Text('Neptu: ${JawaCalendarUtils.neptuTotal(_now)}'),
-                  const Divider(height: 20),
-                  const Text(
-                    'Tanggal Lahir & Weton',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  FilledButton.icon(
-                    onPressed: _pickBirthDate,
-                    icon: const Icon(Icons.cake),
-                    label: const Text('Input Tanggal & Waktu Lahir'),
-                  ),
-                  const SizedBox(height: 6),
-                  if (_birthDate == null)
-                    const Text('Belum memilih tanggal lahir')
-                  else ...[
-                    Text(
-                      'Tanggal Lahir: ${JawaCalendarUtils.formatMasehi(_birthDate!)}',
-                    ),
-                    Text(
-                      'Waktu Lahir: ${_twoDigits(_birthDate!.hour)}:${_twoDigits(_birthDate!.minute)}:${_twoDigits(_birthDate!.second)}',
-                    ),
-                    Text('Weton: ${JawaCalendarUtils.formatJawa(_birthDate!)}'),
-                    Text('Neptu Weton: ${JawaCalendarUtils.neptuTotal(_birthDate!)}'),
-                  ],
                 ],
               ),
             ),
