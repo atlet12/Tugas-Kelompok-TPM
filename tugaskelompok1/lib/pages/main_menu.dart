@@ -6,48 +6,134 @@ import 'cek_bilangan.dart';
 import 'total_angka.dart';
 import 'stopwatch_page.dart';
 import 'hitung_piramid.dart';
+import 'kalender_jawa_page.dart';
+import '../utils/jawa_calendar_utils.dart';
 
-class MainMenu extends StatelessWidget {
+class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
+
+  @override
+  State<MainMenu> createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  final DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> menus = [
-      {'t': 'Data Kelompok', 'i': Icons.people, 'c': Colors.orange, 'p': const DataKelompok()},
-      {'t': 'Hitung Angka', 'i': Icons.add_box, 'c': Colors.green, 'p': const OperasiAngka()},
-      {'t': 'Cek Bilangan', 'i': Icons.numbers, 'c': Colors.blue, 'p': const CekBilangan()},
-      {'t': 'Total', 'i': Icons.summarize, 'c': Colors.purple, 'p': const TotalAngka()},
-      {'t': 'Stopwatch', 'i': Icons.timer, 'c': Colors.red, 'p': const StopwatchPage()},
-      {'t': 'Hitung Piramid', 'i': Icons.architecture, 'c': Colors.teal, 'p': const HitungPiramid()},
+      {
+        't': 'Data Kelompok',
+        'i': Icons.people,
+        'c': Colors.orange,
+        'p': const DataKelompok(),
+      },
+      {
+        't': 'Hitung Angka',
+        'i': Icons.add_box,
+        'c': Colors.green,
+        'p': const OperasiAngka(),
+      },
+      {
+        't': 'Cek Bilangan',
+        'i': Icons.numbers,
+        'c': Colors.blue,
+        'p': const CekBilangan(),
+      },
+      {
+        't': 'Total',
+        'i': Icons.summarize,
+        'c': Colors.purple,
+        'p': const TotalAngka(),
+      },
+      {
+        't': 'Stopwatch',
+        'i': Icons.timer,
+        'c': Colors.red,
+        'p': const StopwatchPage(),
+      },
+      {
+        't': 'Hitung Piramid',
+        'i': Icons.architecture,
+        'c': Colors.teal,
+        'p': const HitungPiramid(),
+      },
+      {
+        't': 'Tanggal Jawa',
+        'i': Icons.calendar_month,
+        'c': Colors.brown,
+        'p': const KalenderJawaPage(),
+      },
     ];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Main Menu"),
         actions: [
-          IconButton(onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage())), icon: const Icon(Icons.logout))
+          IconButton(
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            ),
+            icon: const Icon(Icons.logout),
+          ),
         ],
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(15),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 15, mainAxisSpacing: 15),
-        itemCount: menus.length,
-        itemBuilder: (context, i) {
-          return InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => menus[i]['p'])),
-            child: Card(
-              elevation: 4,
+      body: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.fromLTRB(15, 15, 15, 8),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(menus[i]['i'], size: 45, color: menus[i]['c']),
-                  const SizedBox(height: 10),
-                  Text(menus[i]['t'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Kalender Hari Ini',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(JawaCalendarUtils.formatMasehi(_selectedDate)),
+                  Text('Jawa: ${JawaCalendarUtils.formatJawa(_selectedDate)}'),
+                  Text('Neptu: ${JawaCalendarUtils.neptuTotal(_selectedDate)}'),
                 ],
               ),
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.fromLTRB(15, 8, 15, 15),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+              ),
+              itemCount: menus.length,
+              itemBuilder: (context, i) {
+                return InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => menus[i]['p']),
+                  ),
+                  child: Card(
+                    elevation: 4,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(menus[i]['i'], size: 45, color: menus[i]['c']),
+                        const SizedBox(height: 10),
+                        Text(
+                          menus[i]['t'],
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
