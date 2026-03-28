@@ -104,7 +104,27 @@ class _MainMenuState extends State<MainMenu> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Main Menu"),
+        toolbarHeight: 80,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Main Menu'),
+            const SizedBox(height: 4),
+            Text(
+              '${JawaCalendarUtils.formatMasehi(_now)} | ${JawaCalendarUtils.formatJawa(_now)}',
+              style: const TextStyle(fontSize: 12),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            Text(
+              'Jam: ${_twoDigits(_now.hour)}:${_twoDigits(_now.minute)}:${_twoDigits(_now.second)} | Neptu: ${JawaCalendarUtils.neptuTotal(_now)}',
+              style: const TextStyle(fontSize: 12),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: () => Navigator.pushReplacement(
@@ -115,66 +135,49 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Card(
-            margin: const EdgeInsets.fromLTRB(15, 15, 15, 8),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Kalender Hari Ini',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Jam: ${_twoDigits(_now.hour)}:${_twoDigits(_now.minute)}:${_twoDigits(_now.second)}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(JawaCalendarUtils.formatMasehi(_now)),
-                  Text('Jawa: ${JawaCalendarUtils.formatJawa(_now)}'),
-                  Text('Neptu: ${JawaCalendarUtils.neptuTotal(_now)}'),
-                ],
-              ),
+      body: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+        itemCount: menus.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, i) {
+          return InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => menus[i]['p']),
             ),
-          ),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.fromLTRB(15, 8, 15, 15),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              itemCount: menus.length,
-              itemBuilder: (context, i) {
-                return InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => menus[i]['p']),
-                  ),
-                  child: Card(
-                    elevation: 4,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(menus[i]['i'], size: 45, color: menus[i]['c']),
-                        const SizedBox(height: 10),
-                        Text(
-                          menus[i]['t'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: menus[i]['c'].withOpacity(0.16),
+                      child: Icon(menus[i]['i'], color: menus[i]['c']),
                     ),
-                  ),
-                );
-              },
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        menus[i]['t'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 16),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
