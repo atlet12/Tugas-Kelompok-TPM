@@ -10,6 +10,7 @@ import 'stopwatch_page.dart';
 import 'hitung_piramid.dart';
 import 'kalender_jawa_page.dart';
 import 'weton_lahir_page.dart';
+import 'konversi_hijriah_page.dart';
 import '../utils/jawa_calendar_utils.dart';
 
 class MainMenu extends StatefulWidget {
@@ -92,6 +93,12 @@ class _MainMenuState extends State<MainMenu> {
         'i': Icons.cake,
         'c': Colors.indigo,
         'p': const WetonLahirPage(),
+      },
+      {
+        't': 'Masehi ke Hijriah',
+        'i': Icons.mosque,
+        'c': Colors.deepPurple,
+        'p': const KonversiHijriahPage(),
       },
     ];
 
